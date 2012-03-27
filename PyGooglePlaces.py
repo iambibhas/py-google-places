@@ -14,7 +14,7 @@ class PyGooglePlaces:
         Returns a PyGooglePlaces object
         """
         if not api_key == "":
-            self.API_KEY = "AIzaSyCtHGAefB9YS7oLCQDzz6mQs_RbUIu0Q7o"
+            self.API_KEY = api_key
             self.BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json"
         else:
             raise PGPException("API Key is required.")
