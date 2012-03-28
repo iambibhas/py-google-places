@@ -36,21 +36,16 @@ class PyGooglePlaces:
         @language list of available languages - http://goo.gl/kVquC
         @types list of available types - http://goo.gl/IUJZr
         """
-        base_url = "https://maps.googleapis.com/maps/api/place/search/json"
-        params = urllib.urlencode(
-                        {
-                            'key': self.API_KEY, 
-                            'location': location, 
-                            'radius': radius, 
-                            'sensor': sensor,
-                            'keyword': keyword,
-                            'language': language,
-                            'name': name,
-                            'types': types,
-                        }
-                    )
-        response_json = urllib.urlopen(base_url + "?" + params)
-        response = json.load(response_json)
+        response = self.get("search", {
+                                        'key': self.API_KEY, 
+                                        'location': location, 
+                                        'radius': radius, 
+                                        'sensor': sensor,
+                                        'keyword': keyword,
+                                        'language': language,
+                                        'name': name,
+                                        'types': types,
+                                    })
         return response
 
     def getPlaceDetails(self, reference="", sensor="true", language="en"):
