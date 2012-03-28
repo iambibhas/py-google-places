@@ -19,6 +19,13 @@ class PyGooglePlaces:
         else:
             raise PGPException("API Key is required.")
 
+    def get(self, method="", params={}):
+        base_url = "https://maps.googleapis.com/maps/api/place/%s/json" % method
+        parameters = urllib.urlencode(params)
+        response_json = urllib.urlopen(base_url + "?" + parameters)
+        response = json.load(response_json)
+        return response
+
     def search(self, location="", radius=100, sensor="true", keyword="", language="en", name="", types=""):
         """
         Searches for places.
@@ -54,18 +61,15 @@ class PyGooglePlaces:
         @sensor is true or false.
         @language list of available languages - http://goo.gl/kVquC
         """
-        base_url = "https://maps.googleapis.com/maps/api/place/details/json"
-        params = urllib.urlencode(
-                {
-                    'key': self.API_KEY,
-                    'reference': reference,
-                    'sensor': sensor,
-                    'language': language,
-                }
-            )
-        response_json = urllib.urlopen(base_url + "?" + params)
-        response = json.load(response_json)
+        
+        response = self.get("details", {
+                                    'key': self.API_KEY,
+                                    'reference': reference,
+                                    'sensor': sensor,
+                                    'language': language,
+                                })
         return response
+        
 
     def checkin(self, reference="", sensor="true"):
         """
