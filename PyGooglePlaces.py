@@ -15,7 +15,6 @@ class PyGooglePlaces:
         """
         if not api_key == "":
             self.API_KEY = api_key
-            self.BASE_URL = "https://maps.googleapis.com/maps/api/place/search/json"
         else:
             raise PGPException("API Key is required.")
 
@@ -24,10 +23,12 @@ class PyGooglePlaces:
         Searches for places.
 
         @location is latitude and longitude seperated by comma, e.g. "12.123,56.234"
+        @sensor is true or false.
         @radius is specified in meters.
         @language list of available languages - http://goo.gl/kVquC
         @types list of available types - http://goo.gl/IUJZr
         """
+        base_url = "https://maps.googleapis.com/maps/api/place/search/json"
         params = urllib.urlencode(
                         {
                             'key': self.API_KEY, 
@@ -40,7 +41,28 @@ class PyGooglePlaces:
                             'types': types,
                         }
                     )
-        response_json = urllib.urlopen(self.BASE_URL + "?" + params)
+        response_json = urllib.urlopen(base_url + "?" + params)
         response = json.load(response_json)
-
         return response
+
+    def getPlaceDetails(self, reference="", sensor="true", language="en"):
+        """
+        Gets place details by Reference
+
+        @reference is required.
+        @sensor is true or false.
+        @language list of available languages - http://goo.gl/kVquC
+        """
+        base_url = "https://maps.googleapis.com/maps/api/place/details/json"
+        params = urllib.urlencode(
+                {
+                    'key': self.API_KEY,
+                    'reference': reference,
+                    'sensor': sensor,
+                    'language': language,
+                }
+            )
+        response_json = urllib.urlopen(base_url + "?" + params)
+        response = json.load(response_json)
+        return response
+
