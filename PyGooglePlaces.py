@@ -1,4 +1,5 @@
 import urllib, urllib2, json
+from urllib2 import Request
 
 class PGPException(Exception):
     def __init__(self, value):
@@ -66,3 +67,18 @@ class PyGooglePlaces:
         response = json.load(response_json)
         return response
 
+    def checkin(self, reference="", sensor="true"):
+        """
+        """
+        base_url = "https://maps.googleapis.com/maps/api/place/check-in/json"
+        params = urllib.urlencode(
+                {
+                    'key': self.API_KEY,
+                    'sensor': sensor,
+                }
+            )
+        post_url = base_url + "?" + params
+        data = json.dumps({ 'reference': reference.strip() })
+        response_json = urllib.urlopen(post_url, data)
+        response = json.load(response_json)
+        return response
