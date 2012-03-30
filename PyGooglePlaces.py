@@ -20,6 +20,9 @@ class PyGooglePlaces:
             raise PGPException("API Key is required.")
 
     def get(self, method="", params={}):
+        """
+        Generic method to call the API and return response
+        """
         base_url = "https://maps.googleapis.com/maps/api/place/%s/json" % method
         parameters = urllib.urlencode(params)
         response_json = urllib.urlopen(base_url + "?" + parameters)
@@ -68,6 +71,9 @@ class PyGooglePlaces:
 
     def checkin(self, reference="", sensor="true"):
         """
+        Checks the user in to the given place
+
+        @reference is required.
         """
         base_url = "https://maps.googleapis.com/maps/api/place/check-in/json"
         params = urllib.urlencode(
