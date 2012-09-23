@@ -1,5 +1,4 @@
 import urllib, urllib2, json
-from urllib2 import Request
 
 class PGPException(Exception):
     def __init__(self, value):
@@ -8,26 +7,38 @@ class PGPException(Exception):
         return repr(self.value)
 
 class PyGooglePlaces:
-    def __init__(self, api_key=""):
+    base_url = 'base_url = "https://maps.googleapis.com/maps/api/place/'
+    API_KEY = ""
+
+    def __init__(self, api_key, base_url=""):
         """
         @api_key is required
-
-        Returns a PyGooglePlaces object
         """
         if not api_key == "":
             self.API_KEY = api_key
         else:
             raise PGPException("API Key is required.")
 
-    def get(self, method="", params={}):
+        if not base_url == "":
+            self.base_url = base_url
+
+    def get(self, method, params={}):
         """
         Generic method to call the API and return response
         """
-        base_url = "https://maps.googleapis.com/maps/api/place/%s/json" % method
-        parameters = urllib.urlencode(params)
-        response_json = urllib.urlopen(base_url + "?" + parameters)
-        response = json.load(response_json)
-        return response
+        if method == "":
+            raise PGPException("No Method is provided.")
+
+        try:
+            params['key'] = self.API_KEY
+            url = "%s/%s/json" % (self.base_url, method)
+            parameters = urllib.urlencode(params)
+            response_json = urllib.urlopen(url + "?" + parameters)
+            response = json.load(response_json)
+            return response
+        except Exception as e:
+            print str(e)
+            return False
 
     def search(self, location="", radius=100, sensor="true", keyword="", language="en", name="", types=""):
         """
@@ -39,19 +50,20 @@ class PyGooglePlaces:
         @language list of available languages - http://goo.gl/kVquC
         @types list of available types - http://goo.gl/IUJZr
         """
-        response = self.get("search", {
-                                        'key': self.API_KEY, 
-                                        'location': location, 
-                                        'radius': radius, 
-                                        'sensor': sensor,
-                                        'keyword': keyword,
-                                        'language': language,
-                                        'name': name,
-                                        'types': types,
-                                    })
+        response = self.get(
+            "search", {
+                'location': location, 
+                'radius': radius, 
+                'sensor': sensor,
+                'keyword': keyword,
+                'language': language,
+                'name': name,
+                'types': types,
+            }
+        )
         return response
 
-    def getPlaceDetails(self, reference="", sensor="true", language="en"):
+    def getPlaceDetails(self, reference, sensor="true", language="en"):
         """
         Gets place details by Reference
 
@@ -59,31 +71,32 @@ class PyGooglePlaces:
         @sensor is true or false.
         @language list of available languages - http://goo.gl/kVquC
         """
-        
-        response = self.get("details", {
-                                    'key': self.API_KEY,
-                                    'reference': reference,
-                                    'sensor': sensor,
-                                    'language': language,
-                                })
+        if reference == "":
+            raise PGPException("No Reference is provided.")
+
+        response = self.get(
+            "details", {
+                'reference': reference,
+                'sensor': sensor,
+                'language': language,
+            }
+        )
         return response
         
 
-    def checkin(self, reference="", sensor="true"):
+    def checkin(self, reference, sensor="true"):
         """
         Checks the user in to the given place
 
         @reference is required.
         """
-        base_url = "https://maps.googleapis.com/maps/api/place/check-in/json"
-        params = urllib.urlencode(
-                {
-                    'key': self.API_KEY,
-                    'sensor': sensor,
-                }
-            )
-        post_url = base_url + "?" + params
-        data = json.dumps({ 'reference': reference.strip() })
-        response_json = urllib.urlopen(post_url, data)
-        response = json.load(response_json)
+        if reference == "":
+            raise PGPException("No Reference is provided.")
+
+        response = self.get(
+            "check-in", {
+                'reference': reference,
+                'sensor': sensor,
+            }
+        )
         return response
